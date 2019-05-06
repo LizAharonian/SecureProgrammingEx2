@@ -1,8 +1,8 @@
-from cloud import *
 
-
-def bytes_xor(s1, s2):
-	return ''.join(chr(ord(a) ^ ord(b)) for a, b in zip(s1, s2))
+# Consts
+PLAINTEXT_FILE_NAME = "plain.txt"
+ZERO_AS_BYTE = b'\x00'
+EMPTY_STRING = ""
 
 
 def breakcloud(cloud):
@@ -11,17 +11,27 @@ def breakcloud(cloud):
 	creates a file with the name 'plain.txt' that stores the current text that is encrypted in the cloud.
 	you can use only the Read/Write interfaces of Cloud (do not use its internal variables.)
 	"""
-	old_ct = ''
-	aes_output = ''
+	original_aes_output_before_xor = EMPTY_STRING
+	original_cipherText = EMPTY_STRING
 	i = 0
-	curr_byte = cloud.Write(i, b'\x00')
+	curr_byte = cloud.Write(i, ZERO_AS_BYTE)
 	while curr_byte != None:
-		old_ct += curr_byte
-		aes_output += cloud.Read(i)
+		original_cipherText += curr_byte
+		original_aes_output_before_xor += cloud.Read(i)
 		i += 1
-		curr_byte = cloud.Write(i, b'\x00')
+		curr_byte = cloud.Write(i, ZERO_AS_BYTE)
 
-	xor = bytes_xor(old_ct, aes_output)
+	# Save the original plainText into the requested file
+	with open(PLAINTEXT_FILE_NAME, mode="wb+") as file:
+		# Operate the xor in order to reveal the original plainText
+		file.write(xor(original_cipherText, original_aes_output_before_xor))
 
-	with open("plain.txt", mode='wb+') as file:
-		file.write(xor)
+
+def xor(x, y):
+	"""
+	xor function.
+	:param x: first element in the xor.
+	:param y: second element in the xor.
+	:return: x ^ y
+	"""
+	return "".join(chr(ord(a) ^ ord(b)) for a, b in zip(x, y))

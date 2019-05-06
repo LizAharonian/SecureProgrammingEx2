@@ -1,5 +1,3 @@
-
-
 # Last modified: 2 May 2019
 
 # you don't have to use the packages below, it is only a suggestion. 
@@ -24,11 +22,11 @@ class Cloud:
         self.key = key
         self.nonce = nonce
 
-        with open(filename, mode='rb') as file:
-            self.encryptGivenText(file.read())
+        with open(filename, mode="rb") as file:
+            self.encrypt_given_text(file.read())
 
-    def encryptGivenText(self, text):
-        self.pt = text
+    def encrypt_given_text(self, text):
+        self.plainText = text
         countf = Counter.new(64, self.nonce)
         crypto = AES.new(self.key, AES.MODE_CTR, counter=countf)
         self.ciphertext = crypto.encrypt(text)
@@ -40,21 +38,25 @@ class Cloud:
         """
         if position >= len(self.ciphertext):
             return None
-        print position
         return self.ciphertext[position]
+
     def Write(self, position=0, newbyte='\x33'):
         """
         Replace the byte in 'position' from self.ciphertext with the encryption of 'newbyte'.
         Remember that you should encrypt 'newbyte' under the appropriate key (it depends on the position).
         Return the previous byte from self.ciphertext (before the re-write).
         """
+        # Check the that the requested position is valid
         if position >= len(self.ciphertext):
             return None
         prev_byte = self.Read(position)
-        s = list(self.pt)
-        s[position] = newbyte
-        new_plainText = "".join(s)
-        self.encryptGivenText(new_plainText)
+
+        # Convert to char array because string is immutable
+        new_plain_text_as_char_array = list(self.plainText)
+        new_plain_text_as_char_array[position] = newbyte
+        self.encrypt_given_text("".join(new_plain_text_as_char_array))
+
+        # return the previous byte in the cipherText before the change
         return prev_byte
 
 
