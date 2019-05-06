@@ -38,6 +38,9 @@ class Cloud:
         Returns one byte at 'position' from current self.ciphertext.
         position=0 returns the first byte of the ciphertext.
         """
+        if position >= len(self.ciphertext):
+            return None
+        print position
         return self.ciphertext[position]
     def Write(self, position=0, newbyte='\x33'):
         """
@@ -47,9 +50,10 @@ class Cloud:
         """
         if position >= len(self.ciphertext):
             return None
-        prev_byte = self.ciphertext[position]
-        new_plainText = self.pt
-        new_plainText[position] = newbyte
+        prev_byte = self.Read(position)
+        s = list(self.pt)
+        s[position] = newbyte
+        new_plainText = "".join(s)
         self.encryptGivenText(new_plainText)
         return prev_byte
 

@@ -24,7 +24,7 @@ def testcloud():
 		print "failed..."
 
 def testbreaker():
-	testfile = 'what.txt'
+	testfile ='what.txt'
 	cloud = Cloud(testfile)
 	breakcloud(cloud)
 
